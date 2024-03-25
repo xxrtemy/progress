@@ -5,33 +5,42 @@ function createCircularProgressContainer() {
   
     // Круговой прогресс
     const circularProgress = document.createElement('div');
-    circularProgress.classList.add('circular__progress');
+    circularProgress.classList.add('circular__progress','animated', 'paused');
     container.appendChild(circularProgress);
   
     // Блок с инпутами
     const inputs = document.createElement('div');
-    inputs.classList.add('values');
+    inputs.classList.add('inputs');
   
     // Инпут для значения
+    const inputProgress = document.createElement('div');
+    inputProgress.classList.add('inputs__progress');
     const progressValueInput = document.createElement('input');
     progressValueInput.setAttribute('type', 'number');
     progressValueInput.classList.add('progress__value');
-    inputs.appendChild(progressValueInput);
-    inputs.appendChild(document.createTextNode('Value'));
+    inputProgress.appendChild(progressValueInput);
+    inputProgress.appendChild(document.createTextNode('Value'))
+    inputs.appendChild(inputProgress);
   
     // Чекбокс для анимации
+    const inputAnimate = document.createElement('div');
+    inputAnimate.classList.add('inputs__animate');
     const animatedValueCheckbox = document.createElement('input');
     animatedValueCheckbox.setAttribute('type', 'checkbox');
     animatedValueCheckbox.classList.add('animated__value');
-    inputs.appendChild(animatedValueCheckbox);
-    inputs.appendChild(document.createTextNode('Animated'));
+    inputAnimate.appendChild(animatedValueCheckbox);
+    inputAnimate.appendChild(document.createTextNode('Animated'));
+    inputs.appendChild(inputAnimate);
   
     // Чекбокс для скрытия
+    const inputHidden = document.createElement('div');
+    inputHidden.classList.add('inputs__hidden');
     const hiddenCheckbox = document.createElement('input');
     hiddenCheckbox.setAttribute('type', 'checkbox');
     hiddenCheckbox.classList.add('hidden__value');
-    inputs.appendChild(hiddenCheckbox);
-    inputs.appendChild(document.createTextNode('Hidden'));
+    inputHidden.appendChild(hiddenCheckbox);
+    inputHidden.appendChild(document.createTextNode('Hidden'));
+    inputs.appendChild(inputHidden);
   
     container.appendChild(inputs);
   
@@ -66,20 +75,21 @@ class Progress {
         }
     }
     animate(){
-        circularProgress.classList.add('animated') 
+        circularProgress.style.display = "flex"
+        circularProgress.classList.remove('paused'); 
     }
     hide(){
         circularProgress.style.display = "none"
     }
     normal(){
-        circularProgress.classList.remove('animated');
+        circularProgress.classList.add('paused');
         circularProgress.style.display = "flex"
     }
     
     
     updateProgress(targetRotation){
         const startRotation = currentRotation;
-        const step = (targetRotation - startRotation) / 200; 
+        const step = (targetRotation - startRotation) / 100; 
 
         function updateRotation(){
             if ((step > 0 && currentRotation < targetRotation) || (step < 0 && currentRotation > targetRotation)){
@@ -98,14 +108,14 @@ class Progress {
 document.body.appendChild(createCircularProgressContainer());
 
 const circularProgress = document.querySelector(".circular__progress"),
-    inputValue = document.querySelector(".progress__value");
-let animatedValue = document.querySelector(".animated__value"),
-    hiddenValue = document.querySelector(".hidden__value"),
+    inputValue = document.querySelector(".progress__value"),
+    animatedValue = document.querySelector(".animated__value"),
+    hiddenValue = document.querySelector(".hidden__value");
 
-    currentRotation = 0;
+let currentRotation = 0;
 
 
-    const progress = new Progress();
+const progress = new Progress();
 
 inputValue.addEventListener("change", function(){
     progress.setValue(inputValue.value);
@@ -119,6 +129,7 @@ animatedValue.addEventListener("change", function(){
 
 hiddenValue.addEventListener("change", function(){
     this.checked ? progress.setState('hidden') 
+    : animatedValue.checked ?  progress.setState('animated') 
     : progress.setState('normal');
 }  
 )
